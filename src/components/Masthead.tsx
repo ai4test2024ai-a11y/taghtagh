@@ -1,22 +1,45 @@
 import { useScramble } from "../lib/hooks";
+import { useT } from "../lib/i18n";
+import type { Lang } from "../lib/i18n";
 import type { LayoutName } from "../lib/keyboard";
 
 interface Props {
+  lang: Lang;
+  onLang: (l: Lang) => void;
   layout: LayoutName;
   onLayout: (l: LayoutName) => void;
   soundOn: boolean;
   onSound: () => void;
 }
 
-export default function Masthead({ layout, onLayout, soundOn, onSound }: Props) {
-  const title = useScramble("طَقْطَقَة");
+const LANGS: { id: Lang; label: string }[] = [
+  { id: "ar", label: "عربي" },
+  { id: "fa", label: "فارسی" },
+];
+
+const LAYOUTS: { id: LayoutName; label: string; mono?: boolean }[] = [
+  { id: "ar", label: "عربي" },
+  { id: "fa", label: "فارسی" },
+  { id: "en", label: "EN", mono: true },
+];
+
+export default function Masthead({
+  lang,
+  onLang,
+  layout,
+  onLayout,
+  soundOn,
+  onSound,
+}: Props) {
+  const { t } = useT();
+  const title = useScramble(t.mast.brand);
 
   return (
     <header className="relative max-w-6xl mx-auto px-5 md:px-8 pt-8 md:pt-12">
       {/* شريط اللوحة العلوي */}
       <div className="flex items-center gap-4 font-mono text-[11px] tracking-[0.3em] text-fog">
         <span className="h-px flex-1 bg-ink-600" />
-        <span dir="ltr">ARABIC KEYBOARD LAB · MODEL ط-٨٨</span>
+        <span dir="ltr">{t.mast.topbar}</span>
         <span className="h-px flex-1 bg-ink-600" />
       </div>
 
@@ -24,19 +47,17 @@ export default function Masthead({ layout, onLayout, soundOn, onSound }: Props) 
         {/* الاسم — يتفكك ويلتئم */}
         <div className="md:col-span-8">
           <p className="font-mono text-mint text-xs md:text-sm tracking-[0.2em] mb-4">
-            لوحة مفاتيح حيّة — تكتب، تُصوّت، تُحرّر الرسائل المقلوبة
+            {t.mast.kicker}
           </p>
           <h1
             className="font-display text-[4.6rem] leading-[1.15] md:text-[8rem] md:leading-[1.12] text-bone drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-            aria-label="طَقْطَقَة"
+            aria-label={t.mast.brand}
           >
             {title}
             <span className="text-coral">.</span>
           </h1>
           <p className="mt-5 max-w-xl text-fog leading-relaxed text-base md:text-lg">
-            كل مفتاح هنا يعمل فعلًا: اضغط بلوحتك الحقيقية أو انقر المفاتيح،
-            واسمع الطقطقة، وراقب أي الحروف تبلي مفاتيحها أكثر من غيرها.
-            وفي الأسفل، أداة تفكّ شيفرة من كتب رسالته بالتخطيط الخاطئ.
+            {t.mast.lead}
           </p>
         </div>
 
@@ -46,39 +67,55 @@ export default function Masthead({ layout, onLayout, soundOn, onSound }: Props) 
             <div className="absolute -left-6 -top-6 w-24 h-24 rounded-full bg-mint/10 blur-2xl" />
             <div className="flex items-center justify-between mb-5">
               <span className="font-mono text-[11px] tracking-[0.25em] text-fog">
-                حالة اللوحة
+                {t.mast.statusLabel}
               </span>
               <span className="flex items-center gap-2 text-mint text-sm font-semibold">
                 <span className="w-2.5 h-2.5 rounded-full bg-mint led-on" />
-                جاهزة
+                {t.mast.ready}
               </span>
             </div>
 
-            <div className="mb-5">
-              <div className="text-xs text-fog mb-2">تخطيط الكتابة</div>
+            {/* لغة الصفحة */}
+            <div className="mb-4">
+              <div className="text-xs text-fog mb-2">{t.mast.langLabel}</div>
               <div className="flex gap-2" dir="ltr">
-                <button
-                  onClick={() => onLayout("ar")}
-                  className={`keycap ${layout === "ar" ? "keycap-mint is-down" : "keycap-dark"} px-5 py-2 font-display text-xl leading-none`}
-                  aria-pressed={layout === "ar"}
-                >
-                  عربي
-                </button>
-                <button
-                  onClick={() => onLayout("en")}
-                  className={`keycap ${layout === "en" ? "keycap-mint is-down" : "keycap-dark"} px-5 py-2 font-mono text-sm font-semibold`}
-                  aria-pressed={layout === "en"}
-                >
-                  EN
-                </button>
+                {LANGS.map((l) => (
+                  <button
+                    key={l.id}
+                    onClick={() => onLang(l.id)}
+                    className={`keycap ${lang === l.id ? "keycap-amber is-down" : "keycap-dark"} px-4 py-1.5 font-display text-lg leading-none`}
+                    aria-pressed={lang === l.id}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* تخطيط الكتابة */}
+            <div className="mb-5">
+              <div className="text-xs text-fog mb-2">{t.mast.layoutLabel}</div>
+              <div className="flex gap-2" dir="ltr">
+                {LAYOUTS.map((l) => (
+                  <button
+                    key={l.id}
+                    onClick={() => onLayout(l.id)}
+                    className={`keycap ${layout === l.id ? "keycap-mint is-down" : "keycap-dark"} px-4 py-2 leading-none ${
+                      l.mono ? "font-mono text-sm font-semibold" : "font-display text-xl"
+                    }`}
+                    aria-pressed={layout === l.id}
+                  >
+                    {l.label}
+                  </button>
+                ))}
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs text-fog mb-1">طقطقة الصوت</div>
+                <div className="text-xs text-fog mb-1">{t.mast.soundLabel}</div>
                 <div className="font-mono text-[11px] text-fog/70" dir="ltr">
-                  WebAudio · square wave
+                  {t.mast.soundSub}
                 </div>
               </div>
               <button
@@ -101,8 +138,9 @@ export default function Masthead({ layout, onLayout, soundOn, onSound }: Props) 
           </div>
 
           <p className="mt-4 text-xs text-fog/80 leading-relaxed border-r-2 border-amber pr-3">
-            تلميح: مفتاح <span className="text-amber">⇧</span> يُثبت حالة
-            الهمزات والتشكيل — انقره ثم جرّب <span className="font-display text-bone text-base">ض</span>.
+            {t.mast.hintA} <span className="text-amber">⇧</span> {t.mast.hintB}{" "}
+            <span className="font-display text-bone text-base">{t.mast.hintKey}</span>
+            {t.mast.hintC}
           </p>
         </div>
       </div>

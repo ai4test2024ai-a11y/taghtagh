@@ -1,12 +1,16 @@
-import { CODE_MAP, toArabicDigits } from "../lib/keyboard";
+import { CODE_MAP, localDigits } from "../lib/keyboard";
+import type { LayoutName } from "../lib/keyboard";
+import { useT } from "../lib/i18n";
 
 interface Props {
   total: number;
   kpm: number;
   heat: Record<string, number>;
+  layout: LayoutName;
 }
 
-export default function Stats({ total, kpm, heat }: Props) {
+export default function Stats({ total, kpm, heat, layout }: Props) {
+  const { lang, t } = useT();
   const entries = Object.entries(heat).sort((a, b) => b[1] - a[1]);
   const top = entries.slice(0, 5);
   const maxCount = top.length ? top[0][1] : 1;
@@ -14,7 +18,10 @@ export default function Stats({ total, kpm, heat }: Props) {
   const letterOf = (code: string): string => {
     const def = CODE_MAP.get(code);
     if (!def) return "؟";
-    return def.kind === "space" ? "␣" : def.ar || def.en;
+    if (def.kind === "space") return "␣";
+    if (layout === "fa") return def.fa || def.en;
+    if (layout === "en") return def.en || def.ar;
+    return def.ar || def.en;
   };
 
   return (
@@ -22,25 +29,25 @@ export default function Stats({ total, kpm, heat }: Props) {
       <div className="grid grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
         <div className="lg:col-span-3">
           <div className="font-mono text-[11px] tracking-[0.25em] text-fog mb-2">
-            مجموع الضغطات
+            {t.stats.total}
           </div>
           <div className="font-mono text-5xl md:text-6xl font-semibold text-bone tabular-nums" dir="ltr">
             {total.toLocaleString("en-US")}
           </div>
           <div className="text-xs text-fog/70 mt-1">
-            بالعربية: {toArabicDigits(total)} ضغطة
+            {t.stats.totalLocal(localDigits(total, lang))}
           </div>
         </div>
 
         <div className="lg:col-span-3">
           <div className="font-mono text-[11px] tracking-[0.25em] text-fog mb-2">
-            إيقاع آخر دقيقة
+            {t.stats.kpm}
           </div>
           <div className="flex items-baseline gap-2">
             <span className="font-mono text-5xl md:text-6xl font-semibold text-mint tabular-nums" dir="ltr">
               {kpm}
             </span>
-            <span className="text-sm text-fog">ضغطة/د</span>
+            <span className="text-sm text-fog">{t.stats.kpmUnit}</span>
           </div>
           <div className="mt-3 flex gap-[3px] items-end h-6" dir="ltr">
             {Array.from({ length: 20 }).map((_, i) => (
@@ -55,7 +62,7 @@ export default function Stats({ total, kpm, heat }: Props) {
 
         <div className="lg:col-span-2">
           <div className="font-mono text-[11px] tracking-[0.25em] text-fog mb-2">
-            الأكثر بلاءً
+            {t.stats.worn}
           </div>
           {top.length ? (
             <div className="flex items-center gap-3">
@@ -67,13 +74,13 @@ export default function Stats({ total, kpm, heat }: Props) {
               </span>
             </div>
           ) : (
-            <span className="text-fog/60 text-sm">لم يُضغط بعد</span>
+            <span className="text-fog/60 text-sm">{t.stats.wornEmpty}</span>
           )}
         </div>
 
         <div className="lg:col-span-4 col-span-2">
           <div className="font-mono text-[11px] tracking-[0.25em] text-fog mb-3">
-            الخمسة الأوائل
+            {t.stats.top}
           </div>
           {top.length ? (
             <div className="space-y-2">
@@ -95,9 +102,7 @@ export default function Stats({ total, kpm, heat }: Props) {
               ))}
             </div>
           ) : (
-            <p className="text-fog/60 text-sm leading-relaxed">
-              اكتب شيئًا في الأعلى وستشتعل الأشرطة هنا — كل ضغطة تُسجَّل.
-            </p>
+            <p className="text-fog/60 text-sm leading-relaxed">{t.stats.topEmpty}</p>
           )}
         </div>
       </div>

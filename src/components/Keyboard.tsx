@@ -1,5 +1,6 @@
 import { ROWS } from "../lib/keyboard";
 import type { KeyDef, LayoutName } from "../lib/keyboard";
+import { useT } from "../lib/i18n";
 
 const UNIT = 46;
 const GAP = 6;
@@ -30,6 +31,8 @@ function KeycapView({
   layout,
   shiftOn,
   heatOpacity,
+  label,
+  keyWord,
   onDown,
   onUp,
 }: {
@@ -38,6 +41,8 @@ function KeycapView({
   layout: LayoutName;
   shiftOn: boolean;
   heatOpacity: number;
+  label: string;
+  keyWord: string;
   onDown: () => void;
   onUp: () => void;
 }) {
@@ -47,25 +52,29 @@ function KeycapView({
       ? shiftOn
         ? def.arShift
         : def.ar
-      : shiftOn
-        ? def.enShift
-        : def.en
-    : def.label;
+      : layout === "fa"
+        ? shiftOn
+          ? def.faShift
+          : def.fa
+        : shiftOn
+          ? def.enShift
+          : def.en
+    : label;
   const secondary = hasLegend
-    ? layout === "ar"
+    ? layout === "en"
       ? shiftOn
-        ? def.enShift
-        : def.en
-      : shiftOn
         ? def.arShift
         : def.ar
+      : shiftOn
+        ? def.enShift
+        : def.en
     : undefined;
 
   return (
     <button
       type="button"
       tabIndex={-1}
-      aria-label={def.label ?? `مفتاح ${def.ar || def.en}`}
+      aria-label={`${keyWord} ${def.ar || def.fa || def.en}`}
       className={`${capClass(def, shiftOn)} ${isDown ? "is-down" : ""} h-[46px] shrink-0 overflow-hidden`}
       style={{ width: widthOf(def.w) }}
       onPointerDown={(e) => {
@@ -120,7 +129,12 @@ export default function Keyboard({
   onDown,
   onUp,
 }: Props) {
+  const { t } = useT();
   const maxHeat = Math.max(1, ...Object.values(heat));
+  const layoutName =
+    layout === "ar" ? t.kb.layoutAr : layout === "fa" ? t.kb.layoutFa : t.kb.layoutEn;
+  const labelOf = (def: KeyDef): string =>
+    def.code === "Backspace" ? t.kb.back : def.code === "Enter" ? t.kb.enter : (def.label ?? "");
 
   return (
     <div className="overflow-x-auto pb-2 -mx-1 px-1">
@@ -134,7 +148,7 @@ export default function Keyboard({
         {/* شريط الحالة فوق الصفوف */}
         <div className="flex items-center justify-between px-2 pb-3">
           <div className="font-mono text-[10px] tracking-[0.3em] text-fog/80">
-            طَقْطَقَة <span className="text-amber">TKL-٨٨</span> · تخطيط عربي ١٠١
+            {t.mast.brand} <span className="text-amber">{t.kb.model}</span> · {layoutName}
           </div>
           <div className="flex items-center gap-4 font-mono text-[10px] text-fog/80" dir="ltr">
             <span className="flex items-center gap-1.5">
@@ -162,6 +176,8 @@ export default function Keyboard({
                   isDown={pressed.has(def.code)}
                   layout={layout}
                   shiftOn={shiftOn}
+                  label={labelOf(def)}
+                  keyWord={t.kb.keyWord}
                   heatOpacity={
                     def.kind === "key" && heat[def.code]
                       ? Math.min(0.75, (heat[def.code] / maxHeat) * 0.75)

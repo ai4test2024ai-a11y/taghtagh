@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { LangContext, STR } from "./lib/i18n";
+import type { Lang } from "./lib/i18n";
 import Masthead from "./components/Masthead";
 import Keyboard from "./components/Keyboard";
 import Deck from "./components/Deck";
@@ -15,14 +17,29 @@ import { CODE_MAP, charFor, pickWord } from "./lib/keyboard";
 import type { KeyDef, LayoutName } from "./lib/keyboard";
 import { playTick } from "./lib/sound";
 
-const FLOATERS: { ch: string; style: CSSProperties; cls: string }[] = [
-  { ch: "ض", cls: "text-mint/5", style: { top: "4%", right: "-3%", fontSize: "24rem", animationDuration: "18s" } },
-  { ch: "ش", cls: "text-amber/5", style: { top: "38%", left: "-4%", fontSize: "20rem", animationDuration: "22s", animationDelay: "-6s" } },
-  { ch: "ط", cls: "text-coral/5", style: { top: "62%", right: "2%", fontSize: "26rem", animationDuration: "26s", animationDelay: "-12s" } },
-  { ch: "ظ", cls: "text-mint/5", style: { top: "8%", left: "16%", fontSize: "14rem", animationDuration: "20s", animationDelay: "-3s" } },
-];
+type Floater = { ch: string; style: CSSProperties; cls: string };
+
+const FLOATERS: Record<Lang, Floater[]> = {
+  ar: [
+    { ch: "ض", cls: "text-mint/5", style: { top: "4%", right: "-3%", fontSize: "24rem", animationDuration: "18s" } },
+    { ch: "ش", cls: "text-amber/5", style: { top: "38%", left: "-4%", fontSize: "20rem", animationDuration: "22s", animationDelay: "-6s" } },
+    { ch: "ط", cls: "text-coral/5", style: { top: "62%", right: "2%", fontSize: "26rem", animationDuration: "26s", animationDelay: "-12s" } },
+    { ch: "ظ", cls: "text-mint/5", style: { top: "8%", left: "16%", fontSize: "14rem", animationDuration: "20s", animationDelay: "-3s" } },
+  ],
+  fa: [
+    { ch: "پ", cls: "text-mint/5", style: { top: "4%", right: "-3%", fontSize: "24rem", animationDuration: "18s" } },
+    { ch: "چ", cls: "text-amber/5", style: { top: "38%", left: "-4%", fontSize: "20rem", animationDuration: "22s", animationDelay: "-6s" } },
+    { ch: "ژ", cls: "text-coral/5", style: { top: "62%", right: "2%", fontSize: "26rem", animationDuration: "26s", animationDelay: "-12s" } },
+    { ch: "گ", cls: "text-mint/5", style: { top: "8%", left: "16%", fontSize: "14rem", animationDuration: "20s", animationDelay: "-3s" } },
+  ],
+};
 
 export default function App() {
+  /* ------- اللغة ------- */
+  const [lang, setLang] = useState<Lang>("ar");
+  const t = STR[lang];
+  const ctx = useMemo(() => ({ lang, t }), [lang, t]);
+
   /* ------- حالة اللوحة ------- */
   const [layout, setLayout] = useState<LayoutName>("ar");
   const [shiftOn, setShiftOn] = useState(false);
@@ -41,18 +58,37 @@ export default function App() {
   const stampsRef = useRef<number[]>([]);
 
   /* ------- السباق ------- */
-  const [target, setTarget] = useState(() => pickWord());
+  const [target, setTarget] = useState(() => pickWord("ar"));
   const [pos, setPos] = useState(0);
   const [marks, setMarks] = useState<("hit" | "miss")[]>([]);
   const [raceStart, setRaceStart] = useState<number | null>(null);
   const [result, setResult] = useState<RaceResult | null>(null);
   const [best, setBest] = useState<RaceResult | null>(null);
 
+  /* تبديل اللغة يبدّل تخطيط الكتابة الافتراضي وعنوان الوثيقة */
+  const changeLang = (l: Lang) => {
+    setLang(l);
+    setLayout(l);
+  };
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.title = t.doc.title;
+  }, [lang, t]);
+
+  /* كلمات السباق تتبع لغة الصفحة */
+  useEffect(() => {
+    setTarget(pickWord(lang));
+    setPos(0);
+    setMarks([]);
+    setResult(null);
+    setRaceStart(null);
+  }, [lang]);
+
   /* إيقاع آخر دقيقة */
   useEffect(() => {
     const compute = () => {
       const cutoff = Date.now() - 60_000;
-      stampsRef.current = stampsRef.current.filter((t) => t > cutoff);
+      stampsRef.current = stampsRef.current.filter((ts) => ts > cutoff);
       setKpm(stampsRef.current.length);
     };
     compute();
@@ -61,15 +97,15 @@ export default function App() {
   }, []);
 
   const registerPress = (code: string) => {
-    setTotal((t) => t + 1);
+    setTotal((v) => v + 1);
     setHeat((h) => ({ ...h, [code]: (h[code] ?? 0) + 1 }));
     stampsRef.current.push(Date.now());
   };
 
   const feedRace = (def: KeyDef) => {
     if (result) return;
-    const ch = def.kind === "space" ? " " : charFor(def, false, "ar");
-    if (ch === " ") return;
+    const ch = def.kind === "space" ? " " : charFor(def, false, lang);
+    if (ch === " " || !ch) return;
     if (raceStart === null) setRaceStart(Date.now());
     const hit = ch === target[pos];
     const nextMarks: ("hit" | "miss")[] = [...marks, hit ? "hit" : "miss"];
@@ -92,7 +128,7 @@ export default function App() {
   };
 
   const nextWord = () => {
-    setTarget((t) => pickWord(t));
+    setTarget((prev) => pickWord(lang, prev));
     setPos(0);
     setMarks([]);
     setResult(null);
@@ -114,12 +150,12 @@ export default function App() {
       return;
     }
     if (def.code === "Backspace") {
-      if (tab === "free") setText((t) => t.slice(0, -1));
+      if (tab === "free") setText((v) => v.slice(0, -1));
       playTick("action", soundOn);
       return;
     }
     if (def.code === "Enter") {
-      if (tab === "free") setText((t) => t + "\n");
+      if (tab === "free") setText((v) => v + "\n");
       playTick("action", soundOn);
       return;
     }
@@ -134,15 +170,16 @@ export default function App() {
       playTick("key", soundOn);
       return;
     }
-    setText((t) => t + charFor(def, shift, layout));
-    playTick(charFor(def, shift, layout) === " " ? "space" : "key", soundOn);
+    const ch = charFor(def, shift, layout);
+    setText((v) => v + ch);
+    playTick(ch === " " ? "space" : "key", soundOn);
   };
 
   /* لوحة المفاتيح الفعلية */
   useEffect(() => {
     const onDown = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
 
       if (e.code === "Escape") {
@@ -199,84 +236,92 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      {/* طبقات الخلفية */}
-      <div className="fixed inset-0 bg-keygrid pointer-events-none" />
-      <div className="fixed inset-0 vignette pointer-events-none" />
-      <div className="fixed inset-0 overflow-hidden pointer-events-none hidden md:block" aria-hidden="true">
-        {FLOATERS.map((f, i) => (
-          <span
-            key={i}
-            className={`anim-float absolute font-display select-none leading-none ${f.cls}`}
-            style={f.style}
-          >
-            {f.ch}
-          </span>
-        ))}
-      </div>
-      <div className="noise-overlay" />
+    <LangContext.Provider value={ctx}>
+      <div className="relative min-h-screen">
+        {/* طبقات الخلفية */}
+        <div className="fixed inset-0 bg-keygrid pointer-events-none" />
+        <div className="fixed inset-0 vignette pointer-events-none" />
+        <div className="fixed inset-0 overflow-hidden pointer-events-none hidden md:block" aria-hidden="true">
+          {FLOATERS[lang].map((f, i) => (
+            <span
+              key={`${lang}-${i}`}
+              className={`anim-float absolute font-display select-none leading-none ${f.cls}`}
+              style={f.style}
+            >
+              {f.ch}
+            </span>
+          ))}
+        </div>
+        <div className="noise-overlay" />
 
-      <div className="relative z-10">
-        <Masthead
-          layout={layout}
-          onLayout={setLayout}
-          soundOn={soundOn}
-          onSound={() => setSoundOn((s) => !s)}
-        />
+        <div className="relative z-10">
+          <Masthead
+            lang={lang}
+            onLang={changeLang}
+            layout={layout}
+            onLayout={setLayout}
+            soundOn={soundOn}
+            onSound={() => setSoundOn((s) => !s)}
+          />
 
-        {/* ٠١ — المنضدة */}
-        <section className="max-w-6xl mx-auto px-5 md:px-8 pb-16 md:pb-20">
+          {/* ٠١ — المنضدة */}
+          <section className="max-w-6xl mx-auto px-5 md:px-8 pb-16 md:pb-20">
+            <Reveal>
+              <SectionHead
+                num={t.secs.board.num}
+                kicker={t.secs.board.kicker}
+                title={t.secs.board.title}
+              />
+            </Reveal>
+
+            <Reveal delay={100}>
+              <Keyboard
+                pressed={pressed}
+                layout={layout}
+                shiftOn={shiftOn}
+                capsOn={capsOn}
+                soundOn={soundOn}
+                heat={heat}
+                onDown={pointerDown}
+                onUp={pointerUp}
+              />
+            </Reveal>
+
+            <Reveal delay={200} className="mt-8">
+              <Deck
+                text={text}
+                onClear={() => setText("")}
+                tab={tab}
+                onTab={setTab}
+                target={target}
+                pos={pos}
+                marks={marks}
+                result={result}
+                best={best}
+                onNextWord={nextWord}
+              />
+            </Reveal>
+
+            <Reveal delay={120} className="mt-10">
+              <div className="flex items-baseline justify-between mb-4">
+                <h3 className="font-display text-2xl text-bone">{t.secs.stats.title}</h3>
+                <span className="font-mono text-[11px] tracking-[0.25em] text-fog">
+                  {t.secs.stats.sub}
+                </span>
+              </div>
+              <Stats total={total} kpm={kpm} heat={heat} layout={layout} />
+            </Reveal>
+          </section>
+
           <Reveal>
-            <SectionHead num="٠١" kicker="THE DECK" title="المنضدة — اكتب عليها الآن" />
+            <Ticker />
           </Reveal>
 
-          <Reveal delay={100}>
-            <Keyboard
-              pressed={pressed}
-              layout={layout}
-              shiftOn={shiftOn}
-              capsOn={capsOn}
-              soundOn={soundOn}
-              heat={heat}
-              onDown={pointerDown}
-              onUp={pointerUp}
-            />
-          </Reveal>
-
-          <Reveal delay={200} className="mt-8">
-            <Deck
-              text={text}
-              onClear={() => setText("")}
-              tab={tab}
-              onTab={setTab}
-              target={target}
-              pos={pos}
-              marks={marks}
-              result={result}
-              best={best}
-              onNextWord={nextWord}
-            />
-          </Reveal>
-
-          <Reveal delay={120} className="mt-10">
-            <div className="flex items-baseline justify-between mb-4">
-              <h3 className="font-display text-2xl text-bone">عدادات اللوحة</h3>
-              <span className="font-mono text-[11px] tracking-[0.25em] text-fog">
-                تُحدَّث مع كل ضغطة
-              </span>
-            </div>
-            <Stats total={total} kpm={kpm} heat={heat} />
-          </Reveal>
-        </section>
-
-        <Reveal>
-          <Ticker />
-        </Reveal>
-
-        <Fixer />
-        <Specs />
-        <Footer />
+          <Fixer />
+          <Specs />
+          <Footer />
+        </div>
       </div>
-    </div>
+    </LangContext.Provider>
   );
 }

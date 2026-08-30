@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { toArabicDigits } from "../lib/keyboard";
+import { localDigits } from "../lib/keyboard";
+import { useT } from "../lib/i18n";
 
 export interface RaceResult {
   time: number;
@@ -33,7 +34,9 @@ export default function Deck({
   best,
   onNextWord,
 }: Props) {
+  const { lang, t } = useT();
   const [copied, setCopied] = useState(false);
+  const digits = (n: number) => localDigits(n, lang);
 
   const copy = async () => {
     try {
@@ -44,7 +47,6 @@ export default function Deck({
       /* clipboard غير متاح — لا بأس */
     }
   };
-
   const letters = text.replace(/\n/g, "").length;
 
   return (
@@ -56,17 +58,17 @@ export default function Deck({
           className={`keycap ${tab === "free" ? "keycap-mint is-down" : "keycap-dark"} px-6 py-2.5 font-body font-semibold text-sm`}
           aria-pressed={tab === "free"}
         >
-          الورقة الحرّة
+          {t.deck.tabFree}
         </button>
         <button
           onClick={() => onTab("race")}
           className={`keycap ${tab === "race" ? "keycap-mint is-down" : "keycap-dark"} px-6 py-2.5 font-body font-semibold text-sm`}
           aria-pressed={tab === "race"}
         >
-          سباق الكلمات
+          {t.deck.tabRace}
         </button>
         <span className="text-xs text-fog/80 font-mono mr-auto" dir="rtl">
-          {tab === "free" ? "كل ما تكتبه يُطبع على الورقة" : "التحدي يجري بالعربية دائمًا"}
+          {tab === "free" ? t.deck.noteFree : t.deck.noteRace}
         </span>
       </div>
 
@@ -82,29 +84,27 @@ export default function Deck({
             {text ? (
               text
             ) : (
-              <span className="text-ink-950/35">
-                الصفحة تنتظر… اضغط أي مفتاح على اللوحة.
-              </span>
+              <span className="text-ink-950/35">{t.deck.paperWait}</span>
             )}
             <span className="cursor-blink inline-block w-[0.6em] h-[1.1em] bg-mint align-[-0.15em] mr-0.5 border border-ink-900/40" />
           </div>
 
           <div className="mt-6 pt-4 border-t border-dashed border-ink-950/20 flex items-center gap-3 flex-wrap">
             <span className="font-mono text-xs text-ink-950/60">
-              {toArabicDigits(letters)} حرفًا · {toArabicDigits(text.split("\n").length)} سطرًا
+              {t.deck.letters(digits(letters))} · {t.deck.lines(digits(text.split("\n").length))}
             </span>
             <span className="mr-auto" />
             <button
               onClick={copy}
               className="keycap px-5 py-1.5 text-sm font-semibold"
             >
-              {copied ? "✓ نُسخ" : "نسخ"}
+              {copied ? t.deck.copied : t.deck.copy}
             </button>
             <button
               onClick={onClear}
               className="keycap keycap-coral px-5 py-1.5 text-sm font-semibold"
             >
-              تمزيق الصفحة
+              {t.deck.tear}
             </button>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function Deck({
         <div className="paper rounded-xl p-6 md:p-10 relative overflow-hidden">
           <div className="text-center">
             <div className="font-mono text-[11px] tracking-[0.25em] text-ink-950/50 mb-4">
-              الكلمة التالية — اكتبها حرفًا حرفًا
+              {t.deck.racePrompt}
             </div>
             <div
               className="font-display text-5xl md:text-7xl leading-tight tracking-wide"
@@ -149,46 +149,48 @@ export default function Deck({
               {result ? (
                 <div className="relative w-full max-w-lg flex items-center justify-center gap-6 md:gap-10 flex-wrap py-2">
                   <span className="stamp-in absolute -top-7 left-2 md:left-8 font-display text-3xl md:text-4xl text-coral border-4 border-coral rounded-lg px-4 py-1 select-none">
-                    أُنجزت!
+                    {t.deck.stamp}
                   </span>
                   <div className="text-center">
                     <div className="font-mono text-3xl font-semibold text-ink-900" dir="ltr">
                       {(result.time / 1000).toFixed(2)}s
                     </div>
-                    <div className="text-xs text-ink-950/55 mt-1">الزمن</div>
+                    <div className="text-xs text-ink-950/55 mt-1">{t.deck.time}</div>
                   </div>
                   <div className="text-center">
                     <div className="font-mono text-3xl font-semibold text-ink-900" dir="ltr">
                       {result.acc}%
                     </div>
-                    <div className="text-xs text-ink-950/55 mt-1">الدقّة</div>
+                    <div className="text-xs text-ink-950/55 mt-1">{t.deck.acc}</div>
                   </div>
                   <div className="text-center">
                     <div className="font-mono text-3xl font-semibold text-ink-900" dir="ltr">
                       {result.cps}
                     </div>
-                    <div className="text-xs text-ink-950/55 mt-1">حرف/ثانية</div>
+                    <div className="text-xs text-ink-950/55 mt-1">{t.deck.cps}</div>
                   </div>
                   <button
                     onClick={onNextWord}
                     className="keycap keycap-amber px-6 py-2.5 font-body font-semibold text-sm"
                   >
-                    كلمة جديدة ↻
+                    {t.deck.next}
                   </button>
                 </div>
               ) : (
                 <p className="text-ink-950/50 text-sm">
                   {pos === 0
-                    ? "اضغط أول حرف لتبدأ عدّاد الزمن…"
-                    : `أصبت حتى الآن ${toArabicDigits(marks.filter((m) => m === "hit").length)} من ${toArabicDigits(pos)}`}
+                    ? t.deck.hintStart
+                    : t.deck.hitOf(
+                        digits(marks.filter((m) => m === "hit").length),
+                        digits(pos),
+                      )}
                 </p>
               )}
             </div>
 
             {best && !result && (
               <p className="text-xs text-ink-950/50 font-mono">
-                أفضل نتيجة: «{best.word}» بسرعة <span dir="ltr">{best.cps}</span> حرف/ث وبدقّة{" "}
-                <span dir="ltr">{best.acc}%</span>
+                {t.deck.best(best.word, String(best.cps), String(best.acc))}
               </p>
             )}
           </div>

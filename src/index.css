@@ -1,0 +1,442 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Rakkas", "IBM Plex Sans Arabic", serif;
+  --font-body: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-ink-950: #07110f;
+  --color-ink-900: #0b1a17;
+  --color-ink-850: #0e201c;
+  --color-ink-800: #122621;
+  --color-ink-700: #1a352e;
+  --color-ink-600: #24473d;
+  --color-ink-500: #316053;
+
+  --color-bone: #edf1e4;
+  --color-bone-dim: #d8dfc9;
+  --color-bone-dark: #a9b69e;
+
+  --color-mint: #5fd9a4;
+  --color-amber: #f2a93b;
+  --color-amber-deep: #c07c12;
+  --color-coral: #f2695c;
+  --color-fog: #8fa89e;
+}
+
+/* ---------- خطوط كل لغة ---------- */
+/* العربية: الرقّاس للعناوين + IBM Plex Sans Arabic */
+/* الفارسية: Lalezar للعناوين + Vazirmatn للنصوص */
+/* الإنجليزية: Bricolage Grotesque للعناوين + IBM Plex Sans */
+
+html.lang-fa {
+  --font-display: "Lalezar", "Vazirmatn", serif;
+  --font-body: "Vazirmatn", "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+html.lang-en {
+  --font-display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+html.lang-en .font-display {
+  letter-spacing: -0.015em;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink-950);
+  color: var(--color-bone);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-amber);
+  color: var(--color-ink-950);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-600) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-mint);
+  outline-offset: 2px;
+}
+
+/* ---------- keycaps ---------- */
+
+.keycap {
+  position: relative;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #f2f5e9 0%, #dde3cd 100%);
+  border: 1px solid #a9b69e;
+  border-bottom-color: #87957b;
+  box-shadow:
+    0 5px 0 #93a187,
+    0 8px 14px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  color: #14312a;
+  transform: translateY(0);
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease,
+    filter 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.keycap:hover {
+  filter: brightness(1.05);
+}
+.keycap.is-down {
+  transform: translateY(4px);
+  box-shadow:
+    0 1px 0 #93a187,
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  filter: brightness(0.97);
+}
+
+.keycap-dark {
+  background: linear-gradient(180deg, #29473e 0%, #1a332b 100%);
+  border-color: #316053;
+  border-bottom-color: #0e201c;
+  box-shadow:
+    0 5px 0 #0a1713,
+    0 8px 14px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--color-bone-dim);
+}
+.keycap-dark.is-down {
+  box-shadow:
+    0 1px 0 #0a1713,
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.keycap-amber {
+  background: linear-gradient(180deg, #f7bd5e 0%, #e89b22 100%);
+  border-color: #c07c12;
+  border-bottom-color: #8f5a0a;
+  box-shadow:
+    0 5px 0 #9c640c,
+    0 8px 14px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  color: #3a2503;
+}
+.keycap-amber.is-down {
+  box-shadow:
+    0 1px 0 #9c640c,
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.keycap-coral {
+  background: linear-gradient(180deg, #f58a7c 0%, #e05546 100%);
+  border-color: #b23c2f;
+  border-bottom-color: #832a20;
+  box-shadow:
+    0 5px 0 #8f332a,
+    0 8px 14px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  color: #3d0f09;
+}
+.keycap-coral.is-down {
+  box-shadow:
+    0 1px 0 #8f332a,
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.keycap-mint {
+  background: linear-gradient(180deg, #8be9bf 0%, #4cc38d 100%);
+  border-color: #2f9467;
+  border-bottom-color: #1e6b49;
+  box-shadow:
+    0 5px 0 #256e4c,
+    0 8px 14px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  color: #06301d;
+}
+.keycap-mint.is-down {
+  box-shadow:
+    0 1px 0 #256e4c,
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* ---------- chassis & paper ---------- */
+
+.chassis {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.12)),
+    linear-gradient(180deg, #132823 0%, #0c1c18 100%);
+  border: 1px solid #24473d;
+  border-radius: 18px;
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.screw {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #4b6f63, #16281f 70%);
+  box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.7);
+}
+.screw::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 15%;
+  right: 15%;
+  height: 1.5px;
+  background: rgba(0, 0, 0, 0.6);
+  transform: rotate(35deg);
+}
+
+.paper {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 34px, rgba(20, 49, 42, 0.06) 34px 35px),
+    linear-gradient(180deg, #f4f6ec 0%, #e7ebdb 100%);
+  color: #14312a;
+  border: 1px dashed #a9b69e;
+  box-shadow:
+    0 18px 40px -18px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)), var(--color-ink-900);
+  border: 1px solid var(--color-ink-600);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px -25px rgba(0, 0, 0, 0.8);
+}
+
+/* ---------- signature motion ---------- */
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(-14px) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(16px) rotate(3deg);
+  }
+}
+.anim-float {
+  animation: floaty 14s ease-in-out infinite;
+}
+
+@keyframes marqueeSlide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeSlide 36s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes blinkCursor {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+.cursor-blink {
+  animation: blinkCursor 1.1s step-end infinite;
+}
+
+@keyframes letterPop {
+  0% {
+    transform: scale(0.3) translateY(6px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+.letter-pop {
+  animation: letterPop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
+}
+
+@keyframes stampIn {
+  0% {
+    transform: scale(1.7) rotate(-16deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.94) rotate(-7deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(-8deg);
+    opacity: 1;
+  }
+}
+.stamp-in {
+  animation: stampIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes ledPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 6px 2px rgba(95, 217, 164, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 2px 1px rgba(95, 217, 164, 0.25);
+  }
+}
+.led-on {
+  animation: ledPulse 2.2s ease-in-out infinite;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.75s ease,
+    transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- ambient layers ---------- */
+
+.bg-keygrid {
+  background-image:
+    linear-gradient(rgba(95, 217, 164, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(95, 217, 164, 0.045) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+.vignette {
+  background:
+    radial-gradient(1100px 600px at 85% -5%, rgba(242, 169, 59, 0.09), transparent 60%),
+    radial-gradient(900px 700px at 8% 20%, rgba(95, 217, 164, 0.07), transparent 55%),
+    radial-gradient(1200px 900px at 50% 120%, rgba(7, 17, 15, 0.95), transparent 60%);
+}
+
+.dotted-leader {
+  flex: 1;
+  border-bottom: 2px dotted rgba(143, 168, 158, 0.35);
+  margin: 0 0.75rem;
+  transform: translateY(-6px);
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .anim-float,
+  .marquee-track,
+  .cursor-blink,
+  .letter-pop,
+  .stamp-in,
+  .led-on {
+    animation: none !important;
+  }
+  .keycap,
+  .keycap.is-down {
+    transition: none;
+  }
+  .modal-fade,
+  .modal-pop {
+    animation: none;
+  }
+}
+
+/* ---------- موبایل و تجربهٔ Web App ---------- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+.keycap {
+  touch-action: manipulation; /* بدون تأخیر ۳۰۰ms و بدون زوم دوتap */
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+}
+
+.chassis {
+  touch-action: pan-x pan-y; /* اسکرید افقی خودِ صفحه‌کلید، بقیهٔ صفحه عادی */
+}
+
+.safe-bottom {
+  padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.modal-fade {
+  animation: modal-fade 0.22s ease-out both;
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.modal-pop {
+  animation: modal-pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.12) both;
+}
+
+/* چیپ پیشنهادِ افقی — فقط پرترهٔ موبایل */
+.landscape-chip {
+  display: none;
+}
+@media (orientation: portrait) and (max-width: 767.98px) {
+  .landscape-chip {
+    display: flex;
+  }
+}

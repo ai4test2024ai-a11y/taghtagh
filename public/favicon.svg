@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="cap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6f8ec"/>
+      <stop offset="1" stop-color="#dde3cd"/>
+    </linearGradient>
+  </defs>
+
+  <!-- بدنهٔ تیره با قاب */
+  <rect width="64" height="64" rx="13" fill="#0b1a17"/>
+  <rect x="1" y="1" width="62" height="62" rx="12" fill="none" stroke="#24473d" stroke-width="2"/>
+
+  <!-- سایه و پهلوی کلید -->
+  <rect x="15" y="19" width="38" height="36" rx="8" fill="#000" opacity="0.45"/>
+  <rect x="13" y="17" width="38" height="36" rx="8" fill="#87957b"/>
+
+  <!-- رویهٔ کلید -->
+  <rect x="13" y="10" width="38" height="36" rx="8" fill="url(#cap)" stroke="#a9b69e" stroke-width="1"/>
+
+  <!-- زیرنویس کوچک نعناعی — مثل کلیدهای واقعی -->
+  <text x="19" y="19" font-size="9" fill="#3f9c6f" font-family="ui-monospace, monospace" font-weight="700">ط</text>
+
+  <!-- حرف اصلی -->
+  <text x="32" y="40" font-size="26" text-anchor="middle" fill="#0b1a17" font-weight="700" font-family="Georgia, 'Times New Roman', serif">ط</text>
+
+  <!-- نوار عنبری پای کلید -->
+  <rect x="24" y="56" width="16" height="3" rx="1.5" fill="#f2a93b"/>
+</svg>

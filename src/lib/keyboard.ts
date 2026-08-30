@@ -1,3 +1,5 @@
+import type { Lang } from "./i18n";
+
 export type KeyKind = "key" | "fn" | "action" | "modifier" | "space";
 
 export interface KeyDef {
@@ -123,10 +125,11 @@ export const CODE_MAP: Map<string, KeyDef> = new Map(
 
 export const BOARD_ORDER_AR = "ضصثقفغعهخحجدةشسيبلاتنمكطئءؤرىةوظ٭";
 export const BOARD_ORDER_FA = "ضصثقفغعهخحجچشسیبلاتنمکگظطزرذدپو٭";
+export const BOARD_ORDER_EN = "qwertyuiopasdfghjklzxcvbnm@#&*";
 
 export type LangScript = "ar" | "fa";
-export const boardOrder = (lang: LangScript): string =>
-  lang === "fa" ? BOARD_ORDER_FA : BOARD_ORDER_AR;
+export const boardOrder = (lang: Lang): string =>
+  lang === "fa" ? BOARD_ORDER_FA : lang === "ar" ? BOARD_ORDER_AR : BOARD_ORDER_EN;
 
 export type LayoutName = "ar" | "en" | "fa";
 
@@ -200,20 +203,25 @@ export const isScriptChar = (ch: string): boolean => SCRIPT_RE.test(ch);
 /*  كلمات سباق الكتابة                                */
 /* ------------------------------------------------- */
 
-export const RACE_WORDS: Record<LangScript, string[]> = {
+export const RACE_WORDS: Record<Lang, string[]> = {
   ar: [
     "شمس", "قمر", "كتاب", "قهوة", "سلام", "نور", "حرف", "لوحة",
     "مفتاح", "ضوء", "طاقة", "غيمة", "بحر", "قلم", "ليل", "نجم",
     "سماء", "دفتر", "حديقة", "رسالة", "مطر", "ورد", "صوت", "ظل",
   ],
   fa: [
-    "سلام", "تهران", "کتاب", "خورشید", "باران", "دانشگاه", "شعر", "موسیقی",
-    "آزادی", "نوروز", "بهار", "ستاره", "خیابان", "قهرمان", "دریا", "آسمان",
-    "پنجره", "کوه", "آینه", "دوست", "شب", "ماه", "کلید", "صدا",
+    "سلام", "تهران", "پنجره", "قهرمان", "کتاب", "دریا", "ستاره", "بهار",
+    "خیابان", "چای", "پلنگ", "زندگی", "رویا", "جنگل", "درخت", "گربه",
+    "باران", "کوهستان", "دوچرخه", "مدرسه", "خورشید", "داستان", "مهمان", "پرواز",
+  ],
+  en: [
+    "shift", "enter", "space", "ctrl", "keycap", "letter", "typing", "click",
+    "press", "board", "sound", "quick", "glyph", "stroke", "finger", "speed",
+    "metal", "noise", "alpha", "bravo", "code", "deck", "type", "word",
   ],
 };
 
-export const pickWord = (lang: LangScript, prev?: string): string => {
+export const pickWord = (lang: Lang, prev?: string): string => {
   const list = RACE_WORDS[lang];
   let w = prev;
   while (w === prev) {
@@ -222,12 +230,14 @@ export const pickWord = (lang: LangScript, prev?: string): string => {
   return w as string;
 };
 
-/** أرقام محلية للعرض — هندية عربية أو فارسية */
-export const localDigits = (n: number | string, lang: LangScript): string =>
-  String(n).replace(
-    /\d/g,
-    (d) => (lang === "fa" ? "۰۱۲۳۴۵۶۷۸۹" : "٠١٢٣٤٥٦٧٨٩")[Number(d)],
-  );
+/** أرقام محلية للعرض — هندية عربية أو فارسية أو لاتينية */
+export const localDigits = (n: number | string, lang: Lang): string =>
+  lang === "en"
+    ? String(n)
+    : String(n).replace(
+        /\d/g,
+        (d) => (lang === "fa" ? "۰۱۲۳۴۵۶۷۸۹" : "٠١٢٣٤٥٦٧٨٩")[Number(d)],
+      );
 
 export const toArabicDigits = (n: number | string): string =>
   localDigits(n, "ar");

@@ -67,7 +67,7 @@ export default function Deck({
         >
           {t.deck.tabRace}
         </button>
-        <span className="text-xs text-fog/80 font-mono mr-auto" dir="rtl">
+        <span className="text-xs text-fog/80 font-mono ms-auto">
           {tab === "free" ? t.deck.noteFree : t.deck.noteRace}
         </span>
       </div>
@@ -93,7 +93,7 @@ export default function Deck({
             <span className="font-mono text-xs text-ink-950/60">
               {t.deck.letters(digits(letters))} · {t.deck.lines(digits(text.split("\n").length))}
             </span>
-            <span className="mr-auto" />
+            <span className="ms-auto" />
             <button
               onClick={copy}
               className="keycap px-5 py-1.5 text-sm font-semibold"
@@ -116,7 +116,7 @@ export default function Deck({
             </div>
             <div
               className="font-display text-5xl md:text-7xl leading-tight tracking-wide"
-              dir="rtl"
+              dir={lang === "en" ? "ltr" : "rtl"}
             >
               {target.split("").map((ch, i) => (
                 <span
@@ -139,7 +139,11 @@ export default function Deck({
             {/* شريط التقدم */}
             <div className="mt-8 max-w-md mx-auto h-2 rounded-full bg-ink-950/15 overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-l from-mint to-amber transition-all duration-200"
+                className={`h-full rounded-full transition-all duration-200 ${
+                  lang === "en"
+                    ? "bg-gradient-to-r from-amber to-mint"
+                    : "bg-gradient-to-l from-mint to-amber"
+                }`}
                 style={{ width: `${(pos / target.length) * 100}%` }}
               />
             </div>

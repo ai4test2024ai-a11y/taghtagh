@@ -9,7 +9,9 @@ export default function Fixer() {
   const [input, setInput] = useState(t.fixer.samples[0].text);
   const [copied, setCopied] = useState(false);
 
-  const { output, dir } = useMemo(() => autoConvert(input, lang), [input, lang]);
+  /* الإنجليزية تفكّ شيفرة العربية — فالعربية هي أمّ اللوحة */
+  const script = lang === "fa" ? "fa" : "ar";
+  const { output, dir } = useMemo(() => autoConvert(input, script), [input, script]);
 
   const dirLabel =
     dir === "local→en"
@@ -113,7 +115,7 @@ export default function Fixer() {
                 <button
                   key={s.text}
                   onClick={() => setInput(s.text)}
-                  className={`w-full text-right rounded-lg border p-4 transition-all duration-200 group ${
+                  className={`w-full text-start rounded-lg border p-4 transition-all duration-200 group ${
                     input === s.text
                       ? "border-amber bg-amber/10 shadow-[0_0_0_1px_rgba(242,169,59,0.3)]"
                       : "border-ink-600 bg-ink-800/60 hover:border-fog/60 hover:-translate-y-0.5"

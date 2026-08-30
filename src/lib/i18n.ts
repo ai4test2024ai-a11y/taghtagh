@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-export type Lang = "ar" | "fa";
+export type Lang = "ar" | "fa" | "en";
 
 const ar = {
   doc: { title: "طَقْطَقَة — معمل المفاتيح العربية" },
@@ -18,8 +18,8 @@ const ar = {
     layoutEn: "EN",
     soundLabel: "طقطقة الصوت",
     soundSub: "WebAudio · square wave",
-    hintA: "تلميح: مفتاح",
-    hintB: "يُثبت حالة الهمزات والتشكيل — انقره ثم جرّب",
+    hintA: "تلميح: مفتاح ",
+    hintB: " يُثبت حالة الهمزات والتشكيل — انقره ثم جرّب ",
     hintKey: "ض",
     hintC: ".",
   },
@@ -146,10 +146,10 @@ const fa: Dict = {
     layoutEn: "EN",
     soundLabel: "صدای تق‌تق",
     soundSub: "WebAudio · square wave",
-    hintA: "نکته: کلید",
-    hintB: "حالت اعراب و همزه را ثابت نگه می‌دارد — کلیکش کن و بعد",
+    hintA: "نکته: کلید ",
+    hintB: " حالت اعراب و همزه را ثابت نگه می‌دارد — کلیکش کن و بعد ",
     hintKey: "ژ",
-    hintC: "را امتحان کن.",
+    hintC: " را امتحان کن.",
   },
   secs: {
     board: { num: "۰۱", kicker: "THE DECK", title: "میز کار — همین حالا بنویس" },
@@ -256,7 +256,133 @@ const fa: Dict = {
   ticker: { words: ["تق‌تق", "کلید", "حرف"] },
 };
 
-export const STR: Record<Lang, Dict> = { ar, fa };
+const en: Dict = {
+  doc: { title: "TAQTAQA — the Arabic & Persian keyboard lab" },
+  mast: {
+    topbar: "KEYBOARD LAB · MODEL ط-88 · THREE LANGUAGES",
+    kicker: "A living keyboard — it types, it clacks, it decodes flipped messages",
+    brand: "TAQTAQA",
+    lead: "Every key here actually works: pound away on your real keyboard or click the caps, hear the clack, and watch which letters wear their keycaps the fastest. Further down, a tool deciphers messages typed on the wrong layout.",
+    statusLabel: "Board status",
+    ready: "Ready",
+    langLabel: "Page language",
+    layoutLabel: "Typing layout",
+    layoutAr: "عربي",
+    layoutFa: "فارسی",
+    layoutEn: "EN",
+    soundLabel: "Key click",
+    soundSub: "WebAudio · square wave",
+    hintA: "Tip: the ",
+    hintB: " key latches the shift layer — click it, then try ",
+    hintKey: "@",
+    hintC: ".",
+  },
+  secs: {
+    board: { num: "01", kicker: "THE DECK", title: "The deck — start typing now" },
+    stats: { title: "Board counters", sub: "refreshed on every press" },
+    fixer: { num: "02", kicker: "LAYOUT DECODER", title: "The flipped-layout fixer" },
+    specs: { num: "03", kicker: "SPEC SHEET", title: "Keyboard spec sheet" },
+  },
+  kb: {
+    model: "TKL-88",
+    layoutAr: "Arabic 101 layout",
+    layoutFa: "Persian ISIRI 9147",
+    layoutEn: "QWERTY · EN",
+    back: "⌫ erase",
+    enter: "↵ enter",
+    keyWord: "key",
+  },
+  deck: {
+    tabFree: "Free sheet",
+    tabRace: "Word race",
+    noteFree: "Everything you type lands on the sheet",
+    noteRace: "The race always runs in the page language",
+    paperWait: "The page is waiting… press any key.",
+    letters: (n: string) => `${n} chars`,
+    lines: (n: string) => `${n} lines`,
+    copy: "Copy",
+    copied: "✓ Copied",
+    tear: "Tear the page",
+    racePrompt: "Next word — type it letter by letter",
+    stamp: "Done!",
+    time: "Time",
+    acc: "Accuracy",
+    cps: "chars/sec",
+    next: "New word ↻",
+    hintStart: "Press the first letter to start the clock…",
+    hitOf: (a: string, b: string) => `${a} of ${b} correct so far`,
+    best: (w: string, c: string, a: string) =>
+      `Best run: “${w}” at ${c} cps with ${a}% accuracy`,
+  },
+  stats: {
+    total: "Total presses",
+    totalLocal: (s: string) => `${s} and counting`,
+    kpm: "Last-minute rhythm",
+    kpmUnit: "presses/min",
+    worn: "Most worn",
+    wornEmpty: "Nothing pressed yet",
+    top: "Top five keys",
+    topEmpty: "Type something above and the bars will light up — every press counts.",
+  },
+  fixer: {
+    descA:
+      "It happens to everyone: you type a full sentence, then realize the board was on the wrong layout — “hello” turns into",
+    descCode: "اثللخ",
+    descB:
+      ". Every letter sits on one physical key that carries two glyphs — one per script — and this tool puts each letter back on its key, then reads the other side. Direction is auto-detected: Arabic script in, Latin out, and vice versa.",
+    inputLabel: "Garbled text",
+    placeholder: "Paste whatever was typed on the wrong layout…",
+    dirLabel: "Detected direction:",
+    dirLocal: "Found Arabic-script letters — mapping them back to their Latin keys",
+    dirLatin: "Found Latin letters — mapping them back to their Arabic-script keys",
+    outLabel: "Decoded text",
+    copy: "Copy result",
+    copied: "✓ Copied",
+    flip: "⟲ Flip direction",
+    clear: "Clear",
+    samplesLabel: "Try these samples",
+    tryIt: "→ try it",
+    samples: [
+      { label: "The mystery visitor's code", text: "ئشنث ش لشئث" },
+      { label: "A message stuck in Arabic", text: "فثسف فثسف" },
+      { label: "A greeting typed in English", text: "lvpfh" },
+    ],
+    mapLabel: "A few key mappings",
+    mapPairs: [
+      ["ش", "A"], ["س", "S"], ["ي", "D"], ["ب", "F"],
+      ["ل", "G"], ["ا", "H"], ["ت", "J"], ["ن", "K"],
+      ["م", "L"], ["ئ", "Z"], ["ث", "E"], ["ظ", "/"],
+    ] as [string, string][],
+  },
+  specs: {
+    p1: "The Arabic board keeps QWERTY's physical skeleton but settles its home row in an order that starts with ḍād — which is why digital Arabic dictionaries sort letters as «ض ص ث ق ف», not from alif. Persian shares the skeleton and adds پ چ ژ گ.",
+    p2: "And when you type with the wrong layout active, words don't vanish — they go undercover: each letter borrows its physical neighbour. Flipped messages look like gibberish, but they're just a single map read from the other end — exactly the idea behind the fixer above.",
+    p3: "Try it yourself: type your name, then switch the layout from the control panel at the top and watch the caps change their skins.",
+    dataLabel: "ط-88 · TECHNICAL DATA",
+    rows: [
+      ["Layout", "Arabic 101 & Persian 9147 on a QWERTY body"],
+      ["Key count", "46 letters & symbols + control keys"],
+      ["The letter ظ", "Lives alone on the / key — no Latin twin"],
+      ["Persian گ", "Sits on the ' key — four keys away from Arabic"],
+      ["Tatweel «ـ»", "Hides behind the - key to stretch letters"],
+      ["Home row", "Reads in ḍād order: ش س ي ب ل ا ت ن م"],
+      ["Digits", "٠-٩ in Arabic, ۰-۹ in Persian — no Shift needed"],
+    ] as [string, string][],
+    cards: [
+      { glyph: "ض", text: "First letter of the board order — the «ḍād» it's named after" },
+      { glyph: "ﻻ", text: "Lam-alif: the only key that prints two letters in one stroke" },
+      { glyph: "؟", text: "The Arabic question mark hides on Shift + ظ" },
+    ],
+  },
+  footer: {
+    tagline: "— the Arabic & Persian keyboard lab",
+    hint: "Esc tears the page · every sound is synthesized on press · the board is listening even while you read this line",
+    year: "HANDCRAFTED · 2026",
+  },
+  ticker: { words: ["TAQTAQA", "keycap", "glyph"] },
+};
+
+export const STR: Record<Lang, Dict> = { ar, fa, en };
 
 export const LangContext = createContext<{ lang: Lang; t: Dict }>({
   lang: "ar",

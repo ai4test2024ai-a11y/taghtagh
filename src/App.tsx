@@ -14,34 +14,42 @@ import Footer from "./components/Footer";
 import SectionHead from "./components/SectionHead";
 import Reveal from "./components/Reveal";
 import { CODE_MAP, charFor, pickWord } from "./lib/keyboard";
-import type { KeyDef, LayoutName } from "./lib/keyboard";
+import type { KeyDef } from "./lib/keyboard";
 import { playTick } from "./lib/sound";
 
 type Floater = { ch: string; style: CSSProperties; cls: string };
 
+const float = (ch: string, cls: string, style: CSSProperties): Floater => ({ ch, cls, style });
+
 const FLOATERS: Record<Lang, Floater[]> = {
   ar: [
-    { ch: "ض", cls: "text-mint/5", style: { top: "4%", right: "-3%", fontSize: "24rem", animationDuration: "18s" } },
-    { ch: "ش", cls: "text-amber/5", style: { top: "38%", left: "-4%", fontSize: "20rem", animationDuration: "22s", animationDelay: "-6s" } },
-    { ch: "ط", cls: "text-coral/5", style: { top: "62%", right: "2%", fontSize: "26rem", animationDuration: "26s", animationDelay: "-12s" } },
-    { ch: "ظ", cls: "text-mint/5", style: { top: "8%", left: "16%", fontSize: "14rem", animationDuration: "20s", animationDelay: "-3s" } },
+    float("ض", "text-mint/5", { top: "4%", right: "-3%", fontSize: "24rem", animationDuration: "18s" }),
+    float("ش", "text-amber/5", { top: "38%", left: "-4%", fontSize: "20rem", animationDuration: "22s", animationDelay: "-6s" }),
+    float("ط", "text-coral/5", { top: "62%", right: "2%", fontSize: "26rem", animationDuration: "26s", animationDelay: "-12s" }),
+    float("ظ", "text-mint/5", { top: "8%", left: "16%", fontSize: "14rem", animationDuration: "20s", animationDelay: "-3s" }),
   ],
   fa: [
-    { ch: "پ", cls: "text-mint/5", style: { top: "4%", right: "-3%", fontSize: "24rem", animationDuration: "18s" } },
-    { ch: "چ", cls: "text-amber/5", style: { top: "38%", left: "-4%", fontSize: "20rem", animationDuration: "22s", animationDelay: "-6s" } },
-    { ch: "ژ", cls: "text-coral/5", style: { top: "62%", right: "2%", fontSize: "26rem", animationDuration: "26s", animationDelay: "-12s" } },
-    { ch: "گ", cls: "text-mint/5", style: { top: "8%", left: "16%", fontSize: "14rem", animationDuration: "20s", animationDelay: "-3s" } },
+    float("پ", "text-mint/5", { top: "4%", right: "-3%", fontSize: "24rem", animationDuration: "18s" }),
+    float("چ", "text-amber/5", { top: "38%", left: "-4%", fontSize: "20rem", animationDuration: "22s", animationDelay: "-6s" }),
+    float("ژ", "text-coral/5", { top: "62%", right: "2%", fontSize: "26rem", animationDuration: "26s", animationDelay: "-12s" }),
+    float("گ", "text-mint/5", { top: "8%", left: "16%", fontSize: "14rem", animationDuration: "20s", animationDelay: "-3s" }),
+  ],
+  en: [
+    float("Q", "text-mint/5", { top: "4%", right: "-3%", fontSize: "24rem", animationDuration: "18s" }),
+    float("⇧", "text-amber/5", { top: "38%", left: "-4%", fontSize: "20rem", animationDuration: "22s", animationDelay: "-6s" }),
+    float("K", "text-coral/5", { top: "62%", right: "2%", fontSize: "26rem", animationDuration: "26s", animationDelay: "-12s" }),
+    float("⏎", "text-mint/5", { top: "8%", left: "16%", fontSize: "14rem", animationDuration: "20s", animationDelay: "-3s" }),
   ],
 };
 
 export default function App() {
   /* ------- اللغة ------- */
-  const [lang, setLang] = useState<Lang>("ar");
+  const [lang, setLang] = useState<Lang>("fa");
   const t = STR[lang];
   const ctx = useMemo(() => ({ lang, t }), [lang, t]);
 
   /* ------- حالة اللوحة ------- */
-  const [layout, setLayout] = useState<LayoutName>("ar");
+  const [layout, setLayout] = useState<Lang>("fa");
   const [shiftOn, setShiftOn] = useState(false);
   const [capsOn, setCapsOn] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
@@ -58,20 +66,22 @@ export default function App() {
   const stampsRef = useRef<number[]>([]);
 
   /* ------- السباق ------- */
-  const [target, setTarget] = useState(() => pickWord("ar"));
+  const [target, setTarget] = useState(() => pickWord("fa"));
   const [pos, setPos] = useState(0);
   const [marks, setMarks] = useState<("hit" | "miss")[]>([]);
   const [raceStart, setRaceStart] = useState<number | null>(null);
   const [result, setResult] = useState<RaceResult | null>(null);
   const [best, setBest] = useState<RaceResult | null>(null);
 
-  /* تبديل اللغة يبدّل تخطيط الكتابة الافتراضي وعنوان الوثيقة */
+  /* تبديل اللغة يبدّل تخطيط الكتابة الافتراضي، اتجاه الصفحة، وخطوطها */
   const changeLang = (l: Lang) => {
     setLang(l);
     setLayout(l);
   };
   useEffect(() => {
     document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "en" ? "ltr" : "rtl";
+    document.documentElement.className = `lang-${lang}`;
     document.title = t.doc.title;
   }, [lang, t]);
 
@@ -82,6 +92,7 @@ export default function App() {
     setMarks([]);
     setResult(null);
     setRaceStart(null);
+    setBest(null);
   }, [lang]);
 
   /* إيقاع آخر دقيقة */
@@ -102,9 +113,14 @@ export default function App() {
     stampsRef.current.push(Date.now());
   };
 
-  const feedRace = (def: KeyDef) => {
+  const feedRace = (def: KeyDef, eventKey?: string) => {
     if (result) return;
-    const ch = def.kind === "space" ? " " : charFor(def, false, lang);
+    let ch: string;
+    if (eventKey && eventKey.length === 1) {
+      ch = lang === "en" ? eventKey.toLowerCase() : eventKey;
+    } else {
+      ch = def.kind === "space" ? " " : charFor(def, false, lang);
+    }
     if (ch === " " || !ch) return;
     if (raceStart === null) setRaceStart(Date.now());
     const hit = ch === target[pos];
@@ -136,7 +152,7 @@ export default function App() {
   };
 
   /** نواة المنطق: ماذا تفعل كل ضغطة */
-  const fireKey = (def: KeyDef, physShift: boolean) => {
+  const fireKey = (def: KeyDef, physShift: boolean, eventKey?: string) => {
     const shift = physShift || shiftOn;
 
     if (def.kind === "modifier") {
@@ -150,12 +166,12 @@ export default function App() {
       return;
     }
     if (def.code === "Backspace") {
-      if (tab === "free") setText((v) => v.slice(0, -1));
+      if (tab === "free") setText((prev) => prev.slice(0, -1));
       playTick("action", soundOn);
       return;
     }
     if (def.code === "Enter") {
-      if (tab === "free") setText((v) => v + "\n");
+      if (tab === "free") setText((prev) => prev + "\n");
       playTick("action", soundOn);
       return;
     }
@@ -166,12 +182,12 @@ export default function App() {
 
     registerPress(def.code);
     if (tab === "race") {
-      feedRace(def);
+      feedRace(def, eventKey);
       playTick("key", soundOn);
       return;
     }
     const ch = charFor(def, shift, layout);
-    setText((v) => v + ch);
+    setText((prev) => prev + ch);
     playTick(ch === " " ? "space" : "key", soundOn);
   };
 
@@ -197,7 +213,7 @@ export default function App() {
         return n;
       });
       if (e.repeat) return;
-      fireKey(def, e.shiftKey);
+      fireKey(def, e.shiftKey, e.key);
     };
     const onUp = (e: KeyboardEvent) => {
       setPressed((prev) => {
@@ -303,7 +319,7 @@ export default function App() {
             </Reveal>
 
             <Reveal delay={120} className="mt-10">
-              <div className="flex items-baseline justify-between mb-4">
+              <div className="flex items-baseline justify-between mb-4 gap-4 flex-wrap">
                 <h3 className="font-display text-2xl text-bone">{t.secs.stats.title}</h3>
                 <span className="font-mono text-[11px] tracking-[0.25em] text-fog">
                   {t.secs.stats.sub}

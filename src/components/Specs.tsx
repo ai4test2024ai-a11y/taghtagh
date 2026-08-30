@@ -20,7 +20,7 @@ export default function Specs() {
           <div className="space-y-5 text-fog leading-relaxed">
             <p className="text-lg text-bone/90">{t.specs.p1}</p>
             <p>{t.specs.p2}</p>
-            <p className="text-sm border-r-2 border-mint pr-3">{t.specs.p3}</p>
+            <p className="text-sm border-s-2 border-mint ps-3">{t.specs.p3}</p>
           </div>
         </Reveal>
 

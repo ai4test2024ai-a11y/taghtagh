@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 
-const GLYPHS = "ضصثقفغعهخحجدةشسيبلاتنمكطئءؤرىظذ٭";
+export const SCRAMBLE_GLYPHS = {
+  ar: "ضصثقفغعهخحجدةشسيبلاتنمكطئءؤرىظذ٭",
+  fa: "ضصثقفغعهخحجچشسیبلاتنمکگظطزرذدپ٭",
+  en: "QWERTYUIOPASDFGHJKLZXCVBNM#*%&",
+} as const;
 
 /** عنوان يتفكك إلى حروف عشوائية ثم يلتئم — مع احترام تفضيل تقليل الحركة */
-export function useScramble(text: string): string {
+export function useScramble(text: string, glyphs: string): string {
   const [out, setOut] = useState(text);
 
   useEffect(() => {
@@ -21,7 +25,7 @@ export function useScramble(text: string): string {
         s +=
           i < revealed
             ? text[i]
-            : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+            : glyphs[Math.floor(Math.random() * glyphs.length)];
       }
       return s;
     };

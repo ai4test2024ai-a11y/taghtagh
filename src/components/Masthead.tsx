@@ -1,4 +1,4 @@
-import { useScramble } from "../lib/hooks";
+import { SCRAMBLE_GLYPHS, useScramble } from "../lib/hooks";
 import { useT } from "../lib/i18n";
 import type { Lang } from "../lib/i18n";
 import type { LayoutName } from "../lib/keyboard";
@@ -12,9 +12,10 @@ interface Props {
   onSound: () => void;
 }
 
-const LANGS: { id: Lang; label: string }[] = [
+const LANGS: { id: Lang; label: string; mono?: boolean }[] = [
   { id: "ar", label: "عربي" },
   { id: "fa", label: "فارسی" },
+  { id: "en", label: "EN", mono: true },
 ];
 
 const LAYOUTS: { id: LayoutName; label: string; mono?: boolean }[] = [
@@ -32,7 +33,7 @@ export default function Masthead({
   onSound,
 }: Props) {
   const { t } = useT();
-  const title = useScramble(t.mast.brand);
+  const title = useScramble(t.mast.brand, SCRAMBLE_GLYPHS[lang]);
 
   return (
     <header className="relative max-w-6xl mx-auto px-5 md:px-8 pt-8 md:pt-12">
@@ -83,7 +84,9 @@ export default function Masthead({
                   <button
                     key={l.id}
                     onClick={() => onLang(l.id)}
-                    className={`keycap ${lang === l.id ? "keycap-amber is-down" : "keycap-dark"} px-4 py-1.5 font-display text-lg leading-none`}
+                    className={`keycap ${lang === l.id ? "keycap-amber is-down" : "keycap-dark"} px-4 py-1.5 leading-none ${
+                      l.mono ? "font-mono text-sm font-semibold" : "font-display text-lg"
+                    }`}
                     aria-pressed={lang === l.id}
                   >
                     {l.label}
@@ -137,7 +140,7 @@ export default function Masthead({
             </div>
           </div>
 
-          <p className="mt-4 text-xs text-fog/80 leading-relaxed border-r-2 border-amber pr-3">
+          <p className="mt-4 text-xs text-fog/80 leading-relaxed border-s-2 border-amber ps-3">
             {t.mast.hintA} <span className="text-amber">⇧</span> {t.mast.hintB}{" "}
             <span className="font-display text-bone text-base">{t.mast.hintKey}</span>
             {t.mast.hintC}

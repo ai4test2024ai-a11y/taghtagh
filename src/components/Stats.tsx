@@ -31,7 +31,7 @@ export default function Stats({ total, kpm, heat, layout }: Props) {
           <div className="font-mono text-[11px] tracking-[0.25em] text-fog mb-2">
             {t.stats.total}
           </div>
-          <div className="font-mono text-5xl md:text-6xl font-semibold text-bone tabular-nums" dir="ltr">
+          <div className="font-mono text-4xl sm:text-5xl md:text-6xl font-semibold text-bone tabular-nums" dir="ltr">
             {total.toLocaleString("en-US")}
           </div>
           <div className="text-xs text-fog/70 mt-1">
@@ -44,7 +44,7 @@ export default function Stats({ total, kpm, heat, layout }: Props) {
             {t.stats.kpm}
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="font-mono text-5xl md:text-6xl font-semibold text-mint tabular-nums" dir="ltr">
+            <span className="font-mono text-4xl sm:text-5xl md:text-6xl font-semibold text-mint tabular-nums" dir="ltr">
               {kpm}
             </span>
             <span className="text-sm text-fog">{t.stats.kpmUnit}</span>

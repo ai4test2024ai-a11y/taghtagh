@@ -379,4 +379,64 @@ body {
   .keycap.is-down {
     transition: none;
   }
+  .modal-fade,
+  .modal-pop {
+    animation: none;
+  }
+}
+
+/* ---------- موبایل و تجربهٔ Web App ---------- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+.keycap {
+  touch-action: manipulation; /* بدون تأخیر ۳۰۰ms و بدون زوم دوتap */
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+}
+
+.chassis {
+  touch-action: pan-x pan-y; /* اسکرید افقی خودِ صفحه‌کلید، بقیهٔ صفحه عادی */
+}
+
+.safe-bottom {
+  padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.modal-fade {
+  animation: modal-fade 0.22s ease-out both;
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.modal-pop {
+  animation: modal-pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.12) both;
+}
+
+/* چیپ پیشنهادِ افقی — فقط پرترهٔ موبایل */
+.landscape-chip {
+  display: none;
+}
+@media (orientation: portrait) and (max-width: 767.98px) {
+  .landscape-chip {
+    display: flex;
+  }
 }

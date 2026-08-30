@@ -115,7 +115,7 @@ export default function Deck({
               {t.deck.racePrompt}
             </div>
             <div
-              className="font-display text-5xl md:text-7xl leading-tight tracking-wide"
+              className="font-display text-[clamp(1.9rem,9vw,3rem)] sm:text-5xl md:text-6xl lg:text-7xl leading-tight tracking-wide"
               dir={lang === "en" ? "ltr" : "rtl"}
             >
               {target.split("").map((ch, i) => (

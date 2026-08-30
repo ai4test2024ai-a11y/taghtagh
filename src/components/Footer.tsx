@@ -5,7 +5,7 @@ export default function Footer() {
 
   return (
     <footer className="relative mt-10 border-t border-ink-700">
-      <div className="max-w-6xl mx-auto px-5 md:px-8 py-10 flex flex-col md:flex-row items-center gap-4 justify-between">
+      <div className="safe-bottom max-w-6xl mx-auto px-5 md:px-8 pt-10 flex flex-col md:flex-row items-center gap-4 justify-between">
         <div className="flex items-center gap-3">
           <span className="font-display text-2xl text-bone">{t.mast.brand}</span>
           <span className="text-fog/60 text-sm">{t.footer.tagline}</span>

@@ -138,7 +138,7 @@ export default function Fixer() {
               <div className="font-mono text-[11px] tracking-[0.25em] text-fog mb-3">
                 {t.fixer.mapLabel}
               </div>
-              <div className="grid grid-cols-4 gap-2" dir="ltr">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2" dir="ltr">
                 {t.fixer.mapPairs.map(([local, en]) => (
                   <div
                     key={en}

@@ -137,7 +137,11 @@ export default function Keyboard({
     def.code === "Backspace" ? t.kb.back : def.code === "Enter" ? t.kb.enter : (def.label ?? "");
 
   return (
-    <div className="overflow-x-auto pb-2 -mx-1 px-1">
+    <div>
+      <div className="mb-2 text-center font-mono text-[11px] text-fog/70 md:hidden">
+        {t.mast.swipeHint}
+      </div>
+      <div className="overflow-x-auto overscroll-x-contain pb-2 -mx-1 px-1">
       <div dir="ltr" className="chassis relative min-w-[830px] px-5 pt-4 pb-6">
         {/* براغٍ في الزوايا */}
         <span className="screw top-2.5 right-2.5" />
@@ -190,6 +194,7 @@ export default function Keyboard({
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -53,6 +53,7 @@ export default function App() {
   const [shiftOn, setShiftOn] = useState(false);
   const [capsOn, setCapsOn] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
+  const [chipDismissed, setChipDismissed] = useState(false);
   const [pressed, setPressed] = useState<Set<string>>(new Set());
 
   /* ------- الورقة الحرّة ------- */
@@ -253,7 +254,7 @@ export default function App() {
 
   return (
     <LangContext.Provider value={ctx}>
-      <div className="relative min-h-screen">
+      <div className="relative min-h-dvh">
         {/* طبقات الخلفية */}
         <div className="fixed inset-0 bg-keygrid pointer-events-none" />
         <div className="fixed inset-0 vignette pointer-events-none" />
@@ -269,6 +270,40 @@ export default function App() {
           ))}
         </div>
         <div className="noise-overlay" />
+
+        {/* پیشنهاد افقی‌کردن گوشی — غیرمسدودکننده، فقط در پرترهٔ موبایل */}
+        {!chipDismissed && (
+          <div
+            role="status"
+            className="landscape-chip fixed left-1/2 z-40 max-w-[92vw] -translate-x-1/2 items-center gap-2.5 rounded-full border border-ink-600 bg-ink-900/95 px-4 py-2.5 text-xs text-fog shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-sm"
+            style={{ bottom: "calc(0.9rem + env(safe-area-inset-bottom, 0px))" }}
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              className="shrink-0 text-amber"
+            >
+              <rect x="3" y="7" width="18" height="11" rx="2" />
+              <path d="M7 21h10" />
+            </svg>
+            <span className="truncate">{t.mast.landscapeHint}</span>
+            <button
+              type="button"
+              onClick={() => setChipDismissed(true)}
+              aria-label="×"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-fog transition-colors hover:bg-ink-700 hover:text-bone"
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         <div className="relative z-10">
           <Masthead

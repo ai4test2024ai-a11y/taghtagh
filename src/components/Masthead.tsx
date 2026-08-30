@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { SCRAMBLE_GLYPHS, useScramble } from "../lib/hooks";
 import { useT } from "../lib/i18n";
+import AboutModal from "./AboutModal";
+import GuideModal from "./GuideModal";
 import type { Lang } from "../lib/i18n";
 import type { LayoutName } from "../lib/keyboard";
 
@@ -34,11 +37,12 @@ export default function Masthead({
 }: Props) {
   const { t } = useT();
   const title = useScramble(t.mast.brand, SCRAMBLE_GLYPHS[lang]);
+  const [modal, setModal] = useState<null | "about" | "guide">(null);
 
   return (
     <header className="relative max-w-6xl mx-auto px-5 md:px-8 pt-8 md:pt-12">
       {/* شريط اللوحة العلوي */}
-      <div className="flex items-center gap-4 font-mono text-[11px] tracking-[0.3em] text-fog">
+      <div className="flex items-center gap-2 sm:gap-4 font-mono text-[9px] sm:text-[11px] tracking-[0.15em] sm:tracking-[0.3em] text-fog">
         <span className="h-px flex-1 bg-ink-600" />
         <span dir="ltr">{t.mast.topbar}</span>
         <span className="h-px flex-1 bg-ink-600" />
@@ -51,7 +55,7 @@ export default function Masthead({
             {t.mast.kicker}
           </p>
           <h1
-            className="font-display text-[4.6rem] leading-[1.15] md:text-[8rem] md:leading-[1.12] text-bone drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+            className="font-display text-[clamp(2.8rem,15vw,4.6rem)] leading-[1.15] md:text-[clamp(4.5rem,10vw,8rem)] md:leading-[1.12] text-bone drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
             aria-label={t.mast.brand}
           >
             {title}
@@ -138,15 +142,35 @@ export default function Masthead({
                 />
               </button>
             </div>
-          </div>
 
-          <p className="mt-4 text-xs text-fog/80 leading-relaxed border-s-2 border-amber ps-3">
+            <div className="mt-5 flex gap-2 border-t border-dashed border-ink-600 pt-5">
+            <button
+              type="button"
+              onClick={() => setModal("guide")}
+              className="keycap keycap-amber flex-1 px-2 py-2.5 text-[11px] font-semibold sm:text-sm"
+            >
+              {t.guide.btn}
+            </button>
+            <button
+              type="button"
+              onClick={() => setModal("about")}
+              className="keycap flex-1 px-2 py-2.5 text-[11px] font-semibold sm:text-sm"
+            >
+              {t.about.btn}
+            </button>
+          </div>
+        </div>
+
+        <p className="mt-4 text-xs text-fog/80 leading-relaxed border-s-2 border-amber ps-3">
             {t.mast.hintA} <span className="text-amber">⇧</span> {t.mast.hintB}{" "}
             <span className="font-display text-bone text-base">{t.mast.hintKey}</span>
             {t.mast.hintC}
           </p>
         </div>
       </div>
+
+      {modal === "about" && <AboutModal onClose={() => setModal(null)} />}
+      {modal === "guide" && <GuideModal onClose={() => setModal(null)} />}
     </header>
   );
 }

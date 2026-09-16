@@ -1,0 +1,32 @@
+{
+  "name": "طَقْطَقَة · تق‌تق · TAQTAQA — Keyboard Lab",
+  "short_name": "TAQTAQA",
+  "description": "معمل المفاتيح العربية والفارسية — Persian & Arabic keyboard lab",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#07110f",
+  "theme_color": "#07110f",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "https://image.qwenlm.ai/generated-images/e037a1f4-046f-4b5c-a289-586dcf939468/_result.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://image.qwenlm.ai/generated-images/e037a1f4-046f-4b5c-a289-586dcf939468/_result.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
